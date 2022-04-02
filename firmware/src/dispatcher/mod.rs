@@ -106,6 +106,11 @@ pub enum Message {
     SecondaryLED(leds::Action),
     Sleep,
     Wake,
+    ToggleMacModeReleased,
+    MacSymbolLayerPressed,
+    MacSymbolLayerReleased,
+    WindowsSymbolLayerPressed,
+    WindowsSymbolLayerReleased,
 }
 
 pub enum MessageType {

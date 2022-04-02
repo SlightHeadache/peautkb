@@ -18,6 +18,7 @@ pub struct Info {
     ctrl_held: bool,
     current_layer: Layer,
     ticks_since_press: u32,
+    mac_mode: bool
 }
 
 impl Info {
@@ -118,6 +119,15 @@ impl super::State for Info {
                 .into_styled(font_6x8)
                 .draw(display)
                 .unwrap();
+            Text::new("mac mode:", Point::new(0, 78))
+                .into_styled(font_6x8)
+                .draw(display)
+                .unwrap();
+            let ctrl = bool_to_string(self.mac_mode);
+            Text::new(ctrl, Point::new(0, 91))
+                .into_styled(font_6x8)
+                .draw(display)
+                .unwrap();
         }
 
         display.flush().unwrap();
@@ -178,6 +188,10 @@ impl super::State for Info {
             }
             Message::CtrlReleased => {
                 self.ctrl_held = false;
+                None
+            }
+            Message::ToggleMacModeReleased => {
+                self.mac_mode = !self.mac_mode;
                 None
             }
             Message::Ping => One(Message::Pong),

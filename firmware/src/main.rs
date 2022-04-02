@@ -484,7 +484,19 @@ mod app {
                             }),
                             Message::SetDefaultLayer(i) => {
                                 layout.lock(|l| l.set_default_layer(i));
-                            }
+                            },
+                            Message::MacSymbolLayerPressed => {
+                                layout.lock(|l| l.event(Event::Press(4,0)));
+                            },
+                            Message::MacSymbolLayerReleased => {
+                                layout.lock(|l| l.event(Event::Release(4,0)));
+                            },
+                            Message::WindowsSymbolLayerPressed => {
+                                layout.lock(|l| l.event(Event::Press(4,1)));
+                            },
+                            Message::WindowsSymbolLayerReleased => {
+                                layout.lock(|l| l.event(Event::Release(4,1)));
+                            },
                             _ => (),
                         }
                     }

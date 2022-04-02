@@ -20,6 +20,8 @@ pub enum PkbAction {
     ReleaseCmd,
     HoldCtrl,
     ReleaseCtrl,
+    ToggleMacMode,
+    SymbolsLayer,
 }
 
 pub struct CustomActionState {
@@ -27,6 +29,7 @@ pub struct CustomActionState {
     hold_ctrl: bool,
     current_layer: usize,
     is_primary: bool,
+    mac_mode: bool, // TODO: Is it necessary to also have somethin in disipatch?
     mk_reports: Queue<MediaKeyHidReport, U8>,
 }
 
@@ -37,8 +40,13 @@ impl CustomActionState {
             hold_ctrl: false,
             current_layer: 0,
             is_primary: false,
+            mac_mode: false,
             mk_reports: Queue::new(),
         }
+    }
+
+    pub fn get_mac_mode(&mut self) {
+        self.mac_mode;
     }
 
     pub fn is_primary(&mut self) {
@@ -79,6 +87,21 @@ impl CustomActionState {
                     None
                 }
             }
+            CustomEvent::Release(PkbAction::ToggleMacMode) => {
+                self.mac_mode = !self.mac_mode;
+                Some(Message::ToggleMacModeReleased)
+            }
+
+            CustomEvent::Press(PkbAction::SymbolsLayer) => match self.mac_mode {
+                true => Some(Message::MacSymbolLayerPressed),
+                _ => Some(Message::WindowsSymbolLayerPressed)
+            },
+            CustomEvent::Release(PkbAction::SymbolsLayer) => match self.mac_mode {
+                true => Some(Message::MacSymbolLayerReleased),
+                _ => Some(Message::WindowsSymbolLayerReleased)
+            },
+
+            // handle symbol layer keycode -> sniff mac mode -> emit appropriate messages
             CustomEvent::Release(PkbAction::MenuUp) => Some(Message::Menu(MenuAction::Up)),
             CustomEvent::Release(PkbAction::MenuDown) => Some(Message::Menu(MenuAction::Down)),
             CustomEvent::Release(PkbAction::MenuSelect) => Some(Message::Menu(MenuAction::Select)),
