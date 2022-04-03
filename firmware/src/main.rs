@@ -404,7 +404,27 @@ mod app {
                         let messages = c.process(l.tick());
 
                         for m in messages.into_iter() {
-                            dispatch_event::spawn(m).ok();
+                            match m {
+                                Message::MacSymbolLayerPressed => {
+                                    l.event(Event::Press(4, 0));
+                                    l.tick();
+                                }
+                                Message::MacSymbolLayerReleased => {
+                                    l.event(Event::Release(4, 0));
+                                    l.tick();
+                                }
+                                Message::WindowsSymbolLayerPressed => {
+                                    l.event(Event::Press(4, 1));
+                                    l.tick();
+                                }
+                                Message::WindowsSymbolLayerReleased => {
+                                    l.event(Event::Release(4, 1));
+                                    l.tick();
+                                }
+                                _ => {
+                                    dispatch_event::spawn(m).ok();
+                                }
+                            }
                         }
                     });
                     custom_action_state.lock(|c| {
@@ -484,19 +504,7 @@ mod app {
                             }),
                             Message::SetDefaultLayer(i) => {
                                 layout.lock(|l| l.set_default_layer(i));
-                            },
-                            Message::MacSymbolLayerPressed => {
-                                layout.lock(|l| l.event(Event::Press(4,0)));
-                            },
-                            Message::MacSymbolLayerReleased => {
-                                layout.lock(|l| l.event(Event::Release(4,0)));
-                            },
-                            Message::WindowsSymbolLayerPressed => {
-                                layout.lock(|l| l.event(Event::Press(4,1)));
-                            },
-                            Message::WindowsSymbolLayerReleased => {
-                                layout.lock(|l| l.event(Event::Release(4,1)));
-                            },
+                            }
                             _ => (),
                         }
                     }
